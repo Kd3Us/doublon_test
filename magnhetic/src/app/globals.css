@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+body {
+  font-family: var(--font-inter), sans-serif; /* Font par défaut */
+}
+
+.RedHat {
+  font-family: var(--font-red-hat), sans-serif; /* Font spécifique */
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0%); }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0%); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Lenis hooks */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Page transition overlay utilities */
+.overlay-pane {
+  will-change: transform;
+}
+
+.overlay-slide-in {
+  animation: slideIn 0.5s ease forwards;
+}
+
+.overlay-slide-out {
+  animation: slideOut 0.5s ease forwards;
+}
+
+.overlay-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: #ffffff;
+  animation: spin 0.9s linear infinite;
+}
