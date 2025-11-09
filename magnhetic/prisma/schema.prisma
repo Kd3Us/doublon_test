@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String?
+  role      UserRole @default(STUDENT)
+  
+  studentInfo  StudentInfo?
+  companyInfo  CompanyInfo?
+  
+  registrations EventRegistration[]
+  createdEvents Event[] @relation("EventCreator")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
+}
+
+model StudentInfo {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  school    String?
+  year      Int?
+  field     String?
+  linkedin  String?
+  
+  @@map("student_info")
+}
+
+model CompanyInfo {
+  id          String @id @default(cuid())
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyName String
+  position    String
+  website     String?
+  size        CompanySize?
+  
+  @@map("company_info")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  image       String?
+  
+  date        DateTime
+  startTime   String
+  endTime     String
+  location    String
+  
+  maxCapacity Int?
+  isActive    Boolean  @default(true)
+  isPublic    Boolean  @default(true)
+  
+  creatorId     String
+  creator       User   @relation("EventCreator", fields: [creatorId], references: [id])
+  registrations EventRegistration[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("events")
+}
+
+model EventRegistration {
+  id       String @id @default(cuid())
+  
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  status   RegistrationStatus @default(PENDING)
+  notes    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, eventId])
+  @@map("event_registrations")
+}
+
+model ContactMessage {
+  id      String @id @default(cuid())
+  
+  firstName String
+  lastName  String
+  email     String
+  company   String?
+  message   String
+  
+  subject MessageSubject
+  type    ContactType    @default(GENERAL)
+  status  MessageStatus  @default(UNREAD)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("contact_messages")
+}
+
+enum UserRole {
+  STUDENT
+  COMPANY
+  ADMIN
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  WAITLIST
+}
+
+enum ContactType {
+  GENERAL
+  PARTNERSHIP
+  EVENT_INQUIRY
+  RECRUITMENT
+  TECHNICAL_SUPPORT
+}
+
+enum MessageSubject {
+  PARTNERSHIP
+  EVENT_ORGANIZATION
+  RECRUITMENT
+  TECHNICAL_ISSUE
+  OTHER
+}
+
+enum MessageStatus {
+  UNREAD
+  READ
+  REPLIED
+  ARCHIVED
+}
